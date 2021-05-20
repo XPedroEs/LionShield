@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../CSS/reto3.css">
+    <title>Reto 3</title>
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="background"></div>
+        <div class="reto3-container">
+            <div class="background-reto3"></div>
+            <div class="content">
+                Dicen que aquello que vemos con atención se queda grabado 
+                en nosotros por siempre. 
+                Uno de los protocolos más utilizados por Dan-e 
+                lleva el nombre de "Hypertext Transfer Protocol", 
+                mejor conocido como HTTP. Para ti, ¿cuál es útil
+                en este momento?
+                <br>
+                <br>
+            </div>
+
+        <div class="centered">
+            <input type="text" name="respuesta" id="respuesta">
+        </div>
+            
+        <div class="login-confirmar" id="tipo-boton">
+            <button id="boton" onclick="checkAnswer()">Verificar</button>
+        </div>
+        
+        <div class="login-error description" id="veredicto">                 
+        </div>
+    </div>
+</body>
+<script>
+    function checkAnswer() {
+        let respuesta = document.getElementById('respuesta').value;
+
+        let data = {ans: respuesta, nombreBoton: 'Verificar'};
+        
+        fetch('/agentes/reto3', {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(result => {
+            return result.json();
+        })
+        .then(data => {
+            if(data.veredicto === 'Correcto') {
+                let html = '';
+                html += '<form action="/agentes/reto3" method="POST">';
+                html += '<input type="hidden" name="nombreBoton" value="Siguiente">';
+                html += '<button id="boton" type="submit">Siguiente</button>';
+                html += '</form>';   
+                document.getElementById('tipo-boton').innerHTML = html;
+                document.getElementById('veredicto').innerHTML = 'Siguiente Misión';
+            }
+            else if(data.veredicto === 'UnPasoMas') {
+                document.getElementById('veredicto').innerHTML = 'Un paso más...';
+            }
+            else {
+                document.getElementById('veredicto').innerHTML = '¿Estás seguro?';
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        }); 
+
+        return;
+    }
+</script>
+
+</html>

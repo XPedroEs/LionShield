@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../CSS/login&last.css">
+    <title>LogIn</title>
+</head>
+
+<body>
+    <div class="main-container">
+        <div class="background"></div>
+        
+        <div class="login-form">
+            <div class="background-login-form"></div>
+            
+            <!-- Usuario -->
+            <div class="login-form-input1">
+                <input type="text" name="user" id="user">
+            </div>
+
+            <!-- Password -->
+            <div class="login-form-input2">
+                <input type="password" name="password" id="password">
+            </div> 
+        
+            <!-- Botón de Confirmar -->
+            <div class="login-confirmar" id='tipo-boton'>
+                <button id="boton" onclick="checkAnswer()">Verificar</button>
+            </div>
+            
+            <!-- este div loponermos para cuando queramos escribir que hay un error ! -->
+            <div class="login-error description" id="veredicto"></div>
+        </div>
+    </div>
+</body>
+
+<script>
+    function checkAnswer() {
+        let user = document.getElementById('user').value;
+        let password = document.getElementById('password').value;
+
+        let data = {user: user, password: password, nombreBoton: 'Verificar'};
+        
+        fetch('/agentes/login', {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(result => {
+            return result.json();
+        })
+        .then(data => {
+            console.log(data);
+            if(data.veredicto === 'Correcto') {
+                let html = '';
+                html += '<form action="/agentes/login" method="POST">';
+                html += '<input type="hidden" name="nombreBoton" value="Siguiente">';
+                html += '<button id="boton" type="submit">Siguiente</button>';
+                html += '</form>';   
+                document.getElementById('tipo-boton').innerHTML = html;
+                document.getElementById('veredicto').innerHTML = 'Sigue adelante Agente';
+            }
+            else {
+                document.getElementById('veredicto').innerHTML = 'Identidad Desconocida';
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        }); 
+
+        return;
+    }
+</script>
+
+</html>

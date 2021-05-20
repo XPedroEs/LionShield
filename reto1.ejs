@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../CSS/reto1.css">
+    <title>Reto 1</title>
+</head>
+<body>
+    <div class="main-container">
+        <div class="background"></div>
+        <div class="Bienvenido">
+            <div class="background-Bienvenido"></div>
+
+            <div class="content">
+                <p class="title">¿Sabías que?</p>
+                <p class="description">
+                    Lo que descubrieron Hartle y Hawking 
+                    fue que, si se supone que el pasado  
+                    del universo en tiempo imaginario adquiere 
+                    todas las formas posibles. Lo que sucede 
+                    para coincidir con el lugar donde estamos
+                    ahora. ¿Dónde estás ahora?
+                    ¿Cuándo estás ahora?
+                </p>
+                
+                <div class="login-confirmar">
+                    <input type="text" id="respuesta">
+                    <br>
+                </div>
+                
+                <div class="login-boton" id="tipo-boton">
+                    <button id="boton" onclick="checkAnswer()">Verificar</button> 
+                </div>
+                
+                <div class="login-error description" id="veredicto">                 
+                </div>
+        </div>
+    </div>
+</body>
+<script>
+    function checkAnswer() {
+        let respuesta = document.getElementById('respuesta').value;
+
+        let data = {ans: respuesta, nombreBoton: 'Verificar'};
+        
+        fetch('/agentes/reto1', {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(result => {
+            return result.json();
+        })
+        .then(data => {
+            if(data.veredicto === 'Correcto') {
+                let html = '';
+                html += '<form action="/agentes/reto1" method="POST">';
+                html += '<input type="hidden" name="nombreBoton" value="Siguiente">';
+                html += '<button id="boton" type="submit">Siguiente</button>';
+                html += '</form>';   
+                document.getElementById('tipo-boton').innerHTML = html;
+                document.getElementById('veredicto').innerHTML = 'Entrando a la Base' + '<br>' + 'de Datos...';
+            }
+            else {
+                document.getElementById('veredicto').innerHTML = 'No pareces ser Agente';
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        }); 
+
+        return;
+    }
+</script>
+
+</html>
